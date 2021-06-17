@@ -10,6 +10,9 @@
 <%end%>
 
 <h2>You answered <%=@numCorrect%>/<%=@answers.length%> correct.<h2>
+<% @pastResults.each do |result| %>
+<h2><small><%=result%></small><h2>
+<%end%>
 <a href="/quiz"><button class="btn btn-default btn-lg">Reload</button></a>
 
 
