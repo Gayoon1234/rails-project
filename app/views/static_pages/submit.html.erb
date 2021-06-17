@@ -1,12 +1,15 @@
-<h2>Hello World</h2>
-<!--<h3><%= @answers %></h3>-->
+<h2>Results</h2>
 
 <% @answers.each do |object, answer| %>
     <p><%=object["correct_answers"][answer]%></p>
     <% if object["correct_answers"]["#{answer}_correct"] == "true" %>
-    <p>correct <%=object["question"]%></p>
+    <p style="color:green"><%=object["question"]%></p>
     <%else%>
-    <p>incorrect <%=object["question"]%></p>
+    <p style="color:red"><%=object["question"]%></p>
     <%end%>
 <%end%>
+
+<h2>You answered <%=@numCorrect%>/<%=@answers.length%> correct.<h2>
+<a href="/quiz"><button class="btn btn-default btn-lg">Reload</button></a>
+
 

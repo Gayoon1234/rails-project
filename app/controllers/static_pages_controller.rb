@@ -20,12 +20,14 @@ class StaticPagesController < ApplicationController
   def submit
     @answers = Hash.new
     params.each do |x,y|
-
       if y =~ /^answer\_[a-g]$/
         @@json_hash.each{|object|
           @answers[object] = y if object["id"]== x.to_i
         }
       end
     end
+    
+    @numCorrect = 0;
+    @answers.each{|object, answer| @numCorrect += 1 if object["correct_answers"]["#{answer}_correct"] == "true"}
   end
 end
