@@ -1,40 +1,53 @@
 require 'date'
+require 'json'
+
 class StaticPagesController < ApplicationController
- 
-  
   def home
   end
   
   def quiz
-    @questionCount = params["questionCount"].to_i #unless params["questionCount"] == "" 
+    @questionCount = params["questionCount"].to_i 
     @questionCount = 4 if @questionCount < 4 || @questionCount >8
     allCategories = ["Linux","DevOps","SQL","Bash"]
     
+    @difficulty = params["difficulty"]
+    
     @arrayOfRandomQuestions = Array.new
 
+  if !params["redo"]
     if allCategories.any? { |i| params.has_key? i }
         chosenCategories = params.keys & allCategories
         
         if chosenCategories.length == 1
-          newQuestions(chosenCategories[0],"easy") 
+          newQuestions(chosenCategories[0],@difficulty) 
         else
-          newQuestions(chosenCategories[0],"easy") 
-          chosenCategories[1..].each{|category| appendQuestions(category,"easy")}
+          newQuestions(chosenCategories[0],@difficulty) 
+          chosenCategories[1..].each{|category| appendQuestions(category,@difficulty)}
         end
     end
-      shuffledObjects = @@json_hash.shuffle
+    
+      shuffledObjects = @@json_hash.shuffle  
       @questionCount.times do
       @arrayOfRandomQuestions.push(shuffledObjects.pop) unless shuffledObjects.empty?
     end
+  else
+    id_Array = params["redo"].split(".")
+    id_Array.each do |id|
+      object = objectFromId(id)
+      @arrayOfRandomQuestions.push(object) unless object == nil
+    end
+  end
+    
+    p @arrayOfRandomQuestions
     
   end
   
   def submit
     
     @questionCount = params["questionCount"].to_i
+    @difficulty = params["difficulty"]
     
     @pastResults = Array.new
-    #_17-06-2021.5AM.1.4_17-06-2021.5AM.1.4_17-06-2021.5AM.2.4
     if(cookies["past"] != nil)
       splitString = cookies["past"].split("_")
       splitString = splitString.select{|x| x.length > 0}
@@ -52,14 +65,21 @@ class StaticPagesController < ApplicationController
     end
     
     @answers = Hash.new
+    ids = Array.new
     params.each do |x,y|
       if y =~ /^answer\_[a-g]$/
-        @@json_hash.each{|object| @answers[object] = y if object["id"]== x.to_i}
+        p x, y
+        @@json_hash.each{|object| p object["id"]; @answers[object] = y if object["id"].to_s == x.to_s}
+        ids.push(x)
       end
     end
     
+    @ids = ids.join(".")
+    
+    
     @numCorrect = 0;
     @answers.each{|object, answer| @numCorrect += 1 if object["correct_answers"]["#{answer}_correct"] == "true"}
+    
     
     d = DateTime.now
     timestamp = d.strftime("%d-%m-%Y %H")
@@ -76,22 +96,30 @@ class StaticPagesController < ApplicationController
     timeAndScoreAsString = timeAndScore.join(".")
     cookies["past"] ||= ""
     cookies["past"] += "_" + timeAndScoreAsString
-    
-   # puts timeAndScore
-    
   end
   
   def newQuestions(category,difficulty)
-    file = `curl https://quizapi.io/api/v1/questions -G -d apiKey=QDPJY0cQLHwllKvmAmygqEm5iOxEjlyLhoeUxViy -d limit=10 -d category=#{category} -d difficulty=#{difficulty}`
-    file ||= File.read("quiz.json")
+    file =`curl https://quizapi.io/api/v1/questions -G -d apiKey=QDPJY0cQLHwllKvmAmygqEm5iOxEjlyLhoeUxViy -d limit=10 -d category=#{category} -d difficulty=#{difficulty}`
+    file ||= File.read("quiz.json") #if JSON.parse(file)["error"]
     @@json_hash = JSON.parse(file)
   end
   
   def appendQuestions(category,difficulty)
-    jsonData = `curl https://quizapi.io/api/v1/questions -G -d apiKey=QDPJY0cQLHwllKvmAmygqEm5iOxEjlyLhoeUxViy -d limit=10 -d category=#{category} -d difficulty=#{difficulty}`
-    parsedData = JSON.parse(jsonData)
-    if parsedData
-      parsedData.each{|jsonObject| @@json_hash.push(jsonObject)}
-    end
+    # jsonData = getJSONObject(category,difficulty)
+    # parsedData = JSON.parse(jsonData)
+    # if parsedData.length >3
+    #   parsedData.each{|jsonObject| @@json_hash.push(jsonObject)}
+    # end
+  end
+  
+  def getJSONObject(category,difficulty)
+      `curl https://quizapi.io/api/v1/questions -G -d apiKey=QDPJY0cQLHwllKvmAmygqEm5iOxEjlyLhoeUxViy -d limit=10 -d category=#{category} -d difficulty=#{difficulty}`
+      #data = `curl https://quizapi.io/api/v1/questions -G -d apiKey=QDPPP0cQLHwllKvmAmygqEm5iOxEjlyLhoeUxViy -d limit=10 -d category=#{category} -d difficulty=#{difficulty}`
+      #JSON.parse(data)  
+  end
+  
+  def objectFromId(id)
+    @@json_hash.each{|object| return object if object["id"].to_i == id.to_i}
+    return nil
   end
 end
