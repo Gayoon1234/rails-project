@@ -1,0 +1,22 @@
+<h1>Quiz</h1>
+<!--<h1><%= @out %></h1>-->
+<!--<h1><%= @jsonFile %></h1>-->
+ 
+ <form method="get" action="/quiz/submit/">
+ <% @arrayOfRandomQuestions.each_with_index do |question,index| %>
+ <div class="panel panel-default">
+  <div class="panel-body">
+        <p><%=index+1%>. <%=question["question"]%><p>
+        <fieldset id=<%=question["id"] %>>
+        <% question["answers"].each do |option,value| %>
+            <% if value != nil %>
+            <label style="left:50px" class="radio"><input type="radio" value=<%= option %> name=<%=question["id"] %>><%=value%></label>
+            <%end%>
+        <%end%>
+        </fieldset>
+  </div>
+</div>
+<%end %>
+<button type="submit" class="btn btn-default btn-lg">Submit</button>
+</form>
+

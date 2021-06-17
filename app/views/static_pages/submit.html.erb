@@ -1,0 +1,12 @@
+<h2>Hello World</h2>
+<!--<h3><%= @answers %></h3>-->
+
+<% @answers.each do |object, answer| %>
+    <p><%=object["correct_answers"][answer]%></p>
+    <% if object["correct_answers"]["#{answer}_correct"] == "true" %>
+    <p>correct <%=object["question"]%></p>
+    <%else%>
+    <p>incorrect <%=object["question"]%></p>
+    <%end%>
+<%end%>
+
