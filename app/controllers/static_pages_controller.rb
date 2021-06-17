@@ -9,11 +9,19 @@ class StaticPagesController < ApplicationController
   end
   
   def quiz
+    @questionCount = params["questionCount"] != nil ? params["questionCount"].to_i : 4
+    
     @arrayOfRandomQuestions = Array.new
-    while @arrayOfRandomQuestions.length < 4
-      randomObject = @@json_hash[rand(@@json_hash.length)]
-      @arrayOfRandomQuestions.push(randomObject) unless @arrayOfRandomQuestions.include?(randomObject)
+    # while @arrayOfRandomQuestions.length < questionCount
+    #   randomObject = @@json_hash[rand(@@json_hash.length)]
+    #   @arrayOfRandomQuestions.push(randomObject) unless @arrayOfRandomQuestions.include?(randomObject)
+    # end
+    
+    shuffledObjects = @@json_hash.shuffle
+    @questionCount.times do
+      @arrayOfRandomQuestions.push(shuffledObjects.pop)
     end
+    
   end
   
   def submit
@@ -31,7 +39,7 @@ class StaticPagesController < ApplicationController
       
       splitString.each do |x|
         x = x.to_s.split(".")
-        statement = "At #{x[0]}, #{x[1]}, you answered #{x[2]}/#{x[3]} questions correctly"
+        statement = "At #{x[1]}, #{x[0]}, you answered #{x[2]}/#{x[3]} questions correctly"
         @pastResults.push(statement)
       end
     end

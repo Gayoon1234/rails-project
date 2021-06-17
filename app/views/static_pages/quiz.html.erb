@@ -1,4 +1,4 @@
-<!--https://www.w3schools.com/howto/howto_js_form_steps.asp-->
+<!--JS and CSS adapted from https://www.w3schools.com/howto/howto_js_form_steps.asp-->
 <style>
  /* Hide all steps by default: */
 .tab {
@@ -55,10 +55,9 @@
   
   <!-- Circles which indicates the steps of the form: -->
   <div style="text-align:center;margin-top:40px;">
+    <% @questionCount.times do %>
     <span class="step"></span>
-    <span class="step"></span>
-    <span class="step"></span>
-    <span class="step"></span>
+    <%end%>
   </div>
  
 <button type="submit" class="btn btn-default btn-lg">Submit</button>
@@ -116,15 +115,15 @@ function validateForm() {
   x = document.getElementsByClassName("tab");
   y = x[currentTab].getElementsByTagName("input");
   // A loop that checks every input field in the current tab:
-  for (i = 0; i < y.length; i++) {
-    // If a field is empty...
-    if (y[i].value == "") {
-      // add an "invalid" class to the field:
-      y[i].className += " invalid";
-      // and set the current valid status to false
-      valid = false;
-    }
-  }
+  // for (i = 0; i < y.length; i++) {
+  //   // If a field is empty...
+  //   if (y[i].value == "") {
+  //     // add an "invalid" class to the field:
+  //     y[i].className += " invalid";
+  //     // and set the current valid status to false
+  //     valid = false;
+  //   }
+  // }
   
   if(valid){
     valid = false
