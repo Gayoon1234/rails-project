@@ -8,7 +8,6 @@ class StaticPagesController < ApplicationController
   def quiz
     @questionCount = params["questionCount"].to_i #unless params["questionCount"] == "" 
     @questionCount = 4 if @questionCount < 4 || @questionCount >8
-    puts @questionCount,"???"
     allCategories = ["Linux","DevOps","SQL","Bash"]
     
     @arrayOfRandomQuestions = Array.new
@@ -17,10 +16,10 @@ class StaticPagesController < ApplicationController
         chosenCategories = params.keys & allCategories
         
         if chosenCategories.length == 1
-          newQuestions(chosenCategories[0]) 
+          newQuestions(chosenCategories[0],"easy") 
         else
-          newQuestions(chosenCategories[0]) 
-          chosenCategories[1..].each{|category| appendQuestions(category)}
+          newQuestions(chosenCategories[0],"easy") 
+          chosenCategories[1..].each{|category| appendQuestions(category,"easy")}
         end
     end
       shuffledObjects = @@json_hash.shuffle
