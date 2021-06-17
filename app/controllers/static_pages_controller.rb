@@ -3,28 +3,36 @@ class StaticPagesController < ApplicationController
  
   
   def home
-    #@out = `curl https://quizapi.io/api/v1/questions -G -d apiKey=QDPJY0cQLHwllKvmAmygqEm5iOxEjlyLhoeUxViy -d limit=10`
-   
-    
   end
   
   def quiz
-    @questionCount = params["questionCount"] != nil ? params["questionCount"].to_i : 4
+    @questionCount = params["questionCount"].to_i #unless params["questionCount"] == "" 
+    @questionCount = 4 if @questionCount < 4 || @questionCount >8
+    puts @questionCount,"???"
+    allCategories = ["Linux","DevOps","SQL","Bash"]
     
     @arrayOfRandomQuestions = Array.new
-    # while @arrayOfRandomQuestions.length < questionCount
-    #   randomObject = @@json_hash[rand(@@json_hash.length)]
-    #   @arrayOfRandomQuestions.push(randomObject) unless @arrayOfRandomQuestions.include?(randomObject)
-    # end
-    
-    shuffledObjects = @@json_hash.shuffle
-    @questionCount.times do
-      @arrayOfRandomQuestions.push(shuffledObjects.pop)
+
+    if allCategories.any? { |i| params.has_key? i }
+        chosenCategories = params.keys & allCategories
+        
+        if chosenCategories.length == 1
+          newQuestions(chosenCategories[0]) 
+        else
+          newQuestions(chosenCategories[0]) 
+          chosenCategories[1..].each{|category| appendQuestions(category)}
+        end
+    end
+      shuffledObjects = @@json_hash.shuffle
+      @questionCount.times do
+      @arrayOfRandomQuestions.push(shuffledObjects.pop) unless shuffledObjects.empty?
     end
     
   end
   
   def submit
+    
+    @questionCount = params["questionCount"].to_i
     
     @pastResults = Array.new
     #_17-06-2021.5AM.1.4_17-06-2021.5AM.1.4_17-06-2021.5AM.2.4
@@ -72,5 +80,19 @@ class StaticPagesController < ApplicationController
     
    # puts timeAndScore
     
+  end
+  
+  def newQuestions(category,difficulty)
+    file = `curl https://quizapi.io/api/v1/questions -G -d apiKey=QDPJY0cQLHwllKvmAmygqEm5iOxEjlyLhoeUxViy -d limit=10 -d category=#{category} -d difficulty=#{difficulty}`
+    file ||= File.read("quiz.json")
+    @@json_hash = JSON.parse(file)
+  end
+  
+  def appendQuestions(category,difficulty)
+    jsonData = `curl https://quizapi.io/api/v1/questions -G -d apiKey=QDPJY0cQLHwllKvmAmygqEm5iOxEjlyLhoeUxViy -d limit=10 -d category=#{category} -d difficulty=#{difficulty}`
+    parsedData = JSON.parse(jsonData)
+    if parsedData
+      parsedData.each{|jsonObject| @@json_hash.push(jsonObject)}
+    end
   end
 end

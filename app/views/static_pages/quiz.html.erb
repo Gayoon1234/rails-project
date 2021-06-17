@@ -23,7 +23,7 @@
 
 /* Mark the steps that are finished and valid: */
 .step.finish {
-  background-color: #04AA6D;
+  background-color: #000000;
 }
 </style>
 
@@ -35,7 +35,7 @@
  <% @arrayOfRandomQuestions.each_with_index do |question,index| %>
  <div class="panel panel-default tab">
   <div class="panel-body">
-        <p><%=index+1%>. <%=question["question"]%><p>
+        <p><%=index+1%>. <%=question["question"]%> (<%=question["category"]%>)<p>
         <fieldset id=<%=question["id"] %>>
         <% question["answers"].each do |option,value| %>
             <% if value != nil %>
@@ -60,6 +60,7 @@
     <%end%>
   </div>
  
+<input type="hidden" name="questionCount" value=<%=@questionCount%>>
 <button type="submit" class="btn btn-default btn-lg">Submit</button>
 </form>
 
@@ -114,17 +115,6 @@ function validateForm() {
   var x, y, i, valid = true;
   x = document.getElementsByClassName("tab");
   y = x[currentTab].getElementsByTagName("input");
-  // A loop that checks every input field in the current tab:
-  // for (i = 0; i < y.length; i++) {
-  //   // If a field is empty...
-  //   if (y[i].value == "") {
-  //     // add an "invalid" class to the field:
-  //     y[i].className += " invalid";
-  //     // and set the current valid status to false
-  //     valid = false;
-  //   }
-  // }
-  
   if(valid){
     valid = false
     for (i = 0; i < y.length; i++) {

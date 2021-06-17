@@ -13,6 +13,11 @@
 <% @pastResults.each do |result| %>
 <h2><small><%=result%></small><h2>
 <%end%>
-<a href="/quiz"><button class="btn btn-default btn-lg">Reload</button></a>
+<form action="/quiz">
+    <input type="hidden" name="questionCount" value=<%=@questionCount%>>
+    <input type="submit" class="btn btn-default btn-lg" value="Reload (Same settings)"></button>
+    <a href="/"><button class="btn btn-default btn-lg">Home (Change settings)</button></a>
+</form>
+
 
 
