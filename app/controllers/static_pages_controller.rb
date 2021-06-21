@@ -37,9 +37,6 @@ class StaticPagesController < ApplicationController
       @arrayOfRandomQuestions.push(object) unless object == nil
     end
   end
-    
-    p @arrayOfRandomQuestions
-    
   end
   
   def submit
@@ -83,8 +80,7 @@ class StaticPagesController < ApplicationController
     
     d = DateTime.now
     timestamp = d.strftime("%d-%m-%Y %H")
-    #timestamp = d.strftime("%d-%m-%Y")
-    
+
     timeAndScore = timestamp.split()
     timeAndScore.push(@numCorrect)
     timeAndScore.push(@answers.length)
@@ -114,8 +110,6 @@ class StaticPagesController < ApplicationController
   
   def getJSONObject(category,difficulty)
       `curl https://quizapi.io/api/v1/questions -G -d apiKey=QDPJY0cQLHwllKvmAmygqEm5iOxEjlyLhoeUxViy -d limit=10 -d category=#{category} -d difficulty=#{difficulty}`
-      #data = `curl https://quizapi.io/api/v1/questions -G -d apiKey=QDPPP0cQLHwllKvmAmygqEm5iOxEjlyLhoeUxViy -d limit=10 -d category=#{category} -d difficulty=#{difficulty}`
-      #JSON.parse(data)  
   end
   
   def objectFromId(id)
